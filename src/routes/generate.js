@@ -5,8 +5,35 @@ import sharp from "sharp";
 import { fileURLToPath } from "url";
 import generatePrompt from "../utils/generatePrompt.js";
 import callGemini from "../services/gemini.js";
+import heicConvert from "heic-convert";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+async function convertHeicIfNeeded(filePath) {
+  const buffer = fs.readFileSync(filePath);
+
+  // Basic HEIC file signature check
+  const isHeic =
+    buffer[0] === 0x00 &&
+    buffer[1] === 0x00 &&
+    buffer[2] === 0x00 &&
+    buffer.toString("utf8", 4, 8) === "ftyp";
+
+  if (isHeic) {
+    const outputBuffer = await heicConvert({
+      buffer,
+      format: "JPEG",
+      quality: 1,
+    });
+
+    const newPath = filePath.replace(path.extname(filePath), ".jpg");
+    fs.writeFileSync(newPath, outputBuffer);
+    fs.unlinkSync(filePath); // delete original HEIC
+    return newPath;
+  }
+
+  return filePath;
+}
 
 export default async function generatePost(req, res) {
   const filePath = req.file?.path;
@@ -18,12 +45,15 @@ export default async function generatePost(req, res) {
       return res.status(400).json({ error: "No image uploaded." });
     }
 
-    // Resize image if too large
+    // Convert HEIC to JPEG if needed
+    const safePath = await convertHeicIfNeeded(filePath);
+
+    // Resize image
     resizedPath = path.join(
       __dirname,
-      "../../uploads/resized-" + req.file.filename
+      "../../uploads/resized-" + path.basename(safePath)
     );
-    await sharp(filePath)
+    await sharp(safePath)
       .resize({ width: 1600, height: 1600, fit: "inside" })
       .toFile(resizedPath);
 
@@ -33,10 +63,6 @@ export default async function generatePost(req, res) {
 
     // Prepare prompt
     const prompt = generatePrompt(audience);
-
-    // Debug logs
-    console.log("[DEBUG] Prompt:", prompt);
-    console.log("[DEBUG] Image bytes:", imageBuffer.length);
 
     // Call Gemini API
     try {
@@ -61,7 +87,6 @@ export default async function generatePost(req, res) {
     }
   } catch (err) {
     console.error(err);
-
     if (err.known) {
       res.status(400).json({ error: err.message });
     } else {

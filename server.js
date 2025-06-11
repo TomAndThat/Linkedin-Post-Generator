@@ -46,10 +46,12 @@ const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
-    const allowed = [".jpg", ".jpeg", ".png", ".webp"];
+    const allowed = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"];
     const ext = path.extname(file.originalname).toLowerCase();
     if (!allowed.includes(ext)) {
-      return cb(new Error("Only JPG, PNG, and WEBP files are allowed."));
+      return cb(
+        new Error("Only JPG, PNG, WEBP, HEIC, and HEIF files are allowed.")
+      );
     }
     cb(null, true);
   },
