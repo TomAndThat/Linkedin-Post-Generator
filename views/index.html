@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tom's LinkedIn Post Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        padding-top: 3rem;
+        padding-bottom: 6rem;
+      }
+      #dropzone {
+        border: 2px dashed #ccc;
+        border-radius: 6px;
+        padding: 2rem;
+        text-align: center;
+        color: #888;
+        margin-bottom: 1rem;
+        cursor: pointer;
+      }
+      #dropzone.dragover {
+        background-color: #f8f9fa;
+      }
+      footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        padding: 1rem;
+        background: #f1f1f1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mb-4 text-center">Tom's LinkedIn Post Generator</h1>
+      <p class="text-center">
+        <em
+          >Upload any image, and this handy tool will turn it into a LinkedIn
+          post</em
+        >
+      </p>
+
+      <img
+        id="previewImage"
+        class="img-fluid mb-3 rounded d-none"
+        style="max-height: 300px"
+      />
+
+      <div id="dropzone">Drag and drop an image here, or click to select</div>
+      <input
+        type="file"
+        id="imageInput"
+        accept="image/*"
+        class="form-control mb-3 d-none"
+      />
+
+      <input
+        type="text"
+        id="audience"
+        class="form-control mb-3"
+        placeholder="Optional target audience (e.g. 'startup founders')"
+      />
+
+      <button id="submitBtn" class="btn btn-primary w-100">
+        Generate Post
+      </button>
+
+      <div id="loading" class="mt-3 text-center text-muted d-none">
+        Generating your post...
+      </div>
+
+      <div id="result" class="mt-4 d-none">
+        <h5>Your LinkedIn Post:</h5>
+        <pre
+          id="outputText"
+          class="bg-light p-3 rounded"
+          style="white-space: pre-wrap"
+        ></pre>
+        <div class="d-flex gap-2 flex-wrap">
+          <button id="copyBtn" class="btn btn-outline-secondary">
+            Copy Text
+          </button>
+          <button id="downloadBtn" class="btn btn-outline-secondary d-none">
+            Download Image
+          </button>
+          <button id="resetBtn" class="btn btn-outline-danger">
+            Try Another Image
+          </button>
+        </div>
+      </div>
+
+      <div id="error" class="mt-3 alert alert-danger d-none"></div>
+    </div>
+
+    <section class="container mt-5 pt-5 border-top" id="about">
+      <div class="row align-items-center">
+        <div class="col-md-3 text-center">
+          <img
+            src="/tom.jpg"
+            alt="Tom's photo"
+            class="img-fluid rounded-circle mb-3"
+            style="max-width: 150px"
+          />
+        </div>
+        <div class="col-md-9">
+          <h5>Hello there 👋</h5>
+          <p>
+            My name's Tom, and I'm a creative director and internet content
+            type. Thanks very much for visiting my daft website.
+          </p>
+          <p>
+            I've recently scratched a long-held itch and taken the plunge into
+            the world of freelancing, after 18 years or so at the coal face of
+            social media marketing.
+          </p>
+          <p>
+            If you're after a creative brain, or even if you just fancy a chat,
+            I'd love to
+            <a href="https://linkedin.com/in/tomandthat" target="_blank"
+              >say hi</a
+            >.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <small>
+        <a href="https://instagram.com/tomandthat" target="_blank">Instagram</a>
+        · <a href="https://tiktok.com/@tomandthat" target="_blank">TikTok</a> ·
+        <a href="https://linkedin.com/in/tomandthat" target="_blank">LinkedIn</a
+        ><br />
+        a daft thing by
+        <a href="https://tomandthat.com" target="_blank">@tomandthat</a>
+      </small>
+    </footer>
+    <script src="/script.js"></script>
+  </body>
+</html>
