@@ -18,9 +18,6 @@ export default async function generatePost(req, res) {
       return res.status(400).json({ error: "No image uploaded." });
     }
 
-    console.log("[DEBUG] Prompt:", prompt);
-    console.log("[DEBUG] Image bytes:", imageBuffer.length);
-
     // Resize image if too large
     resizedPath = path.join(
       __dirname,
@@ -37,17 +34,31 @@ export default async function generatePost(req, res) {
     // Prepare prompt
     const prompt = generatePrompt(audience);
 
+    // Debug logs
+    console.log("[DEBUG] Prompt:", prompt);
+    console.log("[DEBUG] Image bytes:", imageBuffer.length);
+
     // Call Gemini API
-    const geminiResponse = await callGemini(base64Image, prompt);
+    try {
+      const geminiResponse = await callGemini(base64Image, prompt);
+      if (geminiResponse.blocked) {
+        return res.status(403).json({
+          error:
+            "Image content was deemed inappropriate for response generation.",
+        });
+      }
 
-    if (geminiResponse.blocked) {
-      return res.status(403).json({
-        error:
-          "Image content was deemed inappropriate for response generation.",
-      });
+      res.json({ text: geminiResponse.text });
+    } catch (err) {
+      console.error("[Gemini Error]", err);
+      if (err.known) {
+        res.status(400).json({ error: err.message });
+      } else {
+        res
+          .status(500)
+          .json({ error: "Something went wrong. Please try again later." });
+      }
     }
-
-    res.json({ text: geminiResponse.text });
   } catch (err) {
     console.error(err);
 
