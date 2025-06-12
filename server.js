@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 // Rate Limiter
 const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 20,
+  max: 10,
   message: "Too many uploads from this IP, please try again later.",
 });
 app.use("/generate", limiter);
